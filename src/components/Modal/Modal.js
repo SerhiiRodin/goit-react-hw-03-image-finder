@@ -13,15 +13,22 @@ export default class Modal extends Component {
   }
 
   handleKeyDown = event => {
-      if (event.code === 'Escape') {
-        console.log("object");
+    if (event.code === 'Escape') {
+      this.props.toggleModal();
+    }
+  };
+
+  handleBackdropClick = event => {
+    // console.log(event.target);
+    // console.log(event.currentTarget);
+    if (event.target === event.currentTarget) {
       this.props.toggleModal();
     }
   };
 
   render() {
     return (
-      <div className={css.Overlay}>
+      <div className={css.Overlay} onClick={this.handleBackdropClick}>
         <div className={css.Modal}>{this.props.children}</div>
       </div>
     );

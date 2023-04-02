@@ -14,7 +14,11 @@ export class App extends Component {
 
   render() {
     return (
-      <div>
+      <div
+        style={{
+          textAlign: 'center',
+        }}
+      >
         <Searchbar handleFormSubmit={this.handleFormSubmit} />
         <ImageGallery inputValue={this.state.inputValue} />
         <ToastContainer />
