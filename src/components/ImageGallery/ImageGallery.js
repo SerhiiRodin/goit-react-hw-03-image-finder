@@ -1,9 +1,10 @@
 import { Component } from 'react';
 import { fetchImages } from 'services/services';
-import { FidgetSpinner } from 'react-loader-spinner';
 import Loader from 'components/Loader/Loader';
 import css from './ImageGallery.module.css';
+import { toast } from 'react-toastify';
 import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
+import Button from 'components/Button/Button';
 
 export default class ImageGallery extends Component {
   state = {
@@ -19,7 +20,7 @@ export default class ImageGallery extends Component {
     // console.log(thisInputValue);
 
     if (prevInputValue !== thisInputValue) {
-      this.setState({ loading: true });
+      this.setState({ loading: true, error: null, images: null });
       fetchImages(thisInputValue)
         .then(data => {
           this.setState({ images: data.hits });
@@ -43,7 +44,7 @@ export default class ImageGallery extends Component {
                   <ImageGalleryItem
                     key={id}
                     webformatURL={webformatURL}
-                    largeURL={largeImageURL}
+                    largeImageURL={largeImageURL}
                     tags={tags}
                   />
                 );
@@ -53,6 +54,9 @@ export default class ImageGallery extends Component {
         )}
         {loading && <Loader />}
         {error && <p>{error.message}</p>}
+            {/* {error && toast.error('xcvxcvx')} */}
+            
+            <Button/>
       </>
     );
   }
