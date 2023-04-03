@@ -101,7 +101,7 @@ export default class ImageGallery extends Component {
   };
 
   render() {
-    const { images, loading, disabled } = this.state;
+    const { images, error, loading, disabled } = this.state;
 
     return (
       <>
@@ -122,7 +122,7 @@ export default class ImageGallery extends Component {
           </ul>
         )}
         {loading && <Loader />}
-        {/* {error && <p>Nothing found!!!</p>} */}
+        {error && <p>Nothing found!!!</p>}
         {/* если компонент services вернет throw new Error */}
         {/* {error && <p>{error.message}</p>} */}
         {/* {error && toast.error(`${error.message}`)} */}
