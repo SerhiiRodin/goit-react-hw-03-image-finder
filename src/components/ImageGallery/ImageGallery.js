@@ -101,7 +101,7 @@ export default class ImageGallery extends Component {
   };
 
   render() {
-    const { images, error, loading, disabled } = this.state;
+    const { images, loading, disabled } = this.state;
 
     return (
       <>
