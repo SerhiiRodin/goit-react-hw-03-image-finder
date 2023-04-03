@@ -2,8 +2,8 @@ import { Component } from 'react';
 import { fetchImages } from 'services/services';
 import Loader from 'components/Loader/Loader';
 import css from './ImageGallery.module.css';
-// import { toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // import { Notify } from 'notiflix';
 import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
 import Button from 'components/Button/Button';
@@ -69,15 +69,28 @@ export default class ImageGallery extends Component {
         // console.log(data);
         // console.log(data.hits.length);
 
+        if (data.hits.length === 0) {
+          toast.warn('Nothing found!!!', { autoClose: 1000 });
+          this.setState({
+            images: [],
+            loading: false,
+            error: true,
+            page: 1,
+            disabled: false,
+          });
+          return;
+        }
+
         if (data.hits.length === 12) {
           this.setState({ disabled: true });
         } else {
           this.setState({ disabled: false });
         }
       })
-      .catch(error =>
-        this.setState({ error: error, disabled: false, images: [] })
-      )
+      .catch(error => {
+        toast.error('Connection error!!!', { autoClose: 1000 });
+        this.setState({ error: error, disabled: false, images: [] });
+      })
       .finally(() => this.setState({ loading: false }));
   };
 
@@ -109,10 +122,11 @@ export default class ImageGallery extends Component {
           </ul>
         )}
         {loading && <Loader />}
-        {error && <p>{error.message}</p>}
+        {/* {error && <p>Nothing found!!!</p>} */}
+        {/* если компонент services вернет throw new Error */}
+        {/* {error && <p>{error.message}</p>} */}
         {/* {error && toast.error(`${error.message}`)} */}
         {/* {error && Notify.failure(`${error.message}`)} */}
-
         {disabled && <Button loadMoreClick={this.loadMoreClick} />}
       </>
     );
