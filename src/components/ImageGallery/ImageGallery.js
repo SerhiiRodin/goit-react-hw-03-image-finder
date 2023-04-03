@@ -3,6 +3,7 @@ import { fetchImages } from 'services/services';
 import Loader from 'components/Loader/Loader';
 import css from './ImageGallery.module.css';
 import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
 import Button from 'components/Button/Button';
 
@@ -12,61 +13,70 @@ export default class ImageGallery extends Component {
     loading: false,
     error: null,
     page: 1,
-    disabledBtn: false,
+    disabled: false,
   };
 
   componentDidUpdate(prevProps, prevState) {
     const prevInputValue = prevProps.inputValue;
     const thisInputValue = this.props.inputValue;
-    const page = this.state.page;
-    // console.log(prevInputValue);
-    // console.log(thisInputValue);
-    // console.log(page);
+    // const page = this.state.page;
+
     if (
       prevInputValue === thisInputValue &&
       this.state.page !== prevState.page &&
       this.state.page === 1
     ) {
-      console.log('запрос');
+      console.log('новый запрос после сброса  параметров');
       this.onFetchInfo();
     }
 
     if (prevInputValue !== thisInputValue && this.state.page !== 1) {
       console.log('Сброс параметров при новом запросе');
-      this.setState({ images: [], page: 1 });
-      }
-      
-      if (prevInputValue !== thisInputValue && this.state.page === 1) {
-          console.log('выполняется при первом запросе');
-          this.onFetchInfo();
-      }
+      this.setState({ images: [], page: 1, disabled: false });
+    }
 
-      if (prevState.page !== this.state.page && this.state.page !== 1) {
-          console.log('выполняется при смене page');
-          this.onFetchInfo();
-      }
-
-    if (prevInputValue !== thisInputValue) {
-      this.setState({ loading: true, error: null, images: [] });
+    if (prevInputValue !== thisInputValue && this.state.page === 1) {
+      console.log('выполняется при первом запросе');
+      this.setState({
+        page: 1,
+        error: null,
+        // images: [],
+        loading: true,
+        disabled: false,
+      });
       this.onFetchInfo();
+    }
 
-      //     fetchImages(thisInputValue, page)
-      //       .then(data => {
-      //         this.setState({ images: data.hits });
-      //         console.log(data);
-      //       })
-      //       .catch(error => this.setState({ error: error }))
-      //       .finally(() => this.setState({ loading: false }));
+    if (prevState.page !== this.state.page && this.state.page !== 1) {
+      console.log('выполняется при смене page');
+      // console.log(prevState.images);
+      // console.log(this.state.images);
+      this.setState({
+        loading: true,
+        error: null,
+        // images: [],
+        disabled: false,
+      });
+      this.onFetchInfo();
     }
   }
 
   onFetchInfo = () => {
     fetchImages(this.props.inputValue, this.state.page)
       .then(data => {
-        this.setState({ images: data.hits });
-        console.log(data);
+        this.setState(prev => ({ images: [...prev.images, ...data.hits] }));
+        // console.log(data);
+        // console.log(data.hits.length);
+
+        if (data.hits.length === 12) {
+          this.setState({ disabled: true });
+        } else {
+          this.setState({ disabled: false });
+        }
       })
-      .catch(error => this.setState({ error: error }))
+      .catch(error =>
+        this.setState({ error: error, disabled: false, images: [] })
+      )
       .finally(() => this.setState({ loading: false }));
   };
 
@@ -77,7 +87,7 @@ export default class ImageGallery extends Component {
   };
 
   render() {
-    const { images, error, loading } = this.state;
+    const { images, error, loading, disabled } = this.state;
 
     return (
       <>
@@ -98,10 +108,10 @@ export default class ImageGallery extends Component {
           </ul>
         )}
         {loading && <Loader />}
-        {error && <p>{error.message}</p>}
-        {/* {error && toast.error('xcvxcvx')} */}
+        {/* {error && <p>{error.message}</p>} */}
+        {error && toast.error('xcvxcvx')}
 
-        <Button loadMoreClick={this.loadMoreClick} />
+        {disabled && <Button loadMoreClick={this.loadMoreClick} />}
       </>
     );
   }
